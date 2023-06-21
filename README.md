@@ -17,7 +17,7 @@ COMMAND NAME            COMMAND FUNCTION
                         of the server is used. See ?deflang
 
 ?deflang [lang_code]    Sets the default language of the given server
-                        to [lang_code]. The default value is 'en' for English.
+ADMIN ONLY              to [lang_code]. The default value is 'en' for English.
 
 NOTE: Language codes follow the ISO 691-1 standard. If the language is not found
 in ISO 691-1, then ISO 639-3 is used.

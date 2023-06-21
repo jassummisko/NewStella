@@ -4,6 +4,8 @@ import urllib.parse
 import json
 import random
 
+class NotEnoughWords(Exception): pass
+
 def getSheetInfo(sheet: str, link: str, quer: list[str]|str) -> tuple[list[str], list[str]]:		#Define function getTopic with "sheet" as an argument (this corresponds to the language code)
     urlopen = urllib.request.urlopen
 
@@ -28,7 +30,7 @@ def getSheetInfo(sheet: str, link: str, quer: list[str]|str) -> tuple[list[str],
         if data["rows"][i]["c"][0] is not None:
             amount_of_questions += 1
 
-    if amount_of_questions < 30: raise Exception(amount_of_questions)
+    if amount_of_questions < 30: raise NotEnoughWords(amount_of_questions)
 
     if amount_of_questions > 1: rnd = random.randrange(0, amount_of_questions - 1)
     else: rnd = 0

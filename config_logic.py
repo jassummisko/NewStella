@@ -22,6 +22,6 @@ def addEntry(entries: dict, server_id: str, default_language: str):
     entries[server_id] = default_language
     saveEntries(entries)
 
-def getDefaultLanguage(entries: dict, server_id) -> str|None:
+def getDefaultLanguage(entries: dict, server_id: str) -> str|None:
     if server_id in entries: return entries[server_id]
     return None

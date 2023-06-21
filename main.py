@@ -1,77 +1,36 @@
-from response_strings import *
-from config_logic import *
+from commands import admin_commands
+from commands import query_commands
+from globals import TOKEN, BOT
 import discord
-from query_utils import getSheetInfo
 from discord.ext import commands
 
-TOKEN: str
-with open(".token", "r") as f: TOKEN = f.read().strip()
+@BOT.command(brief="[Admin] Default language for the server to fall back to")
+async def deflang(ctx, lang = None): await admin_commands.deflang(ctx, lang)
 
-DEFAULT_LANGUAGE_ENTRIES: dict = readEntries()
+@BOT.command(brief="Conversation topics for open discussions (B1 and up)")
+async def topic(ctx, lang=None): await query_commands.topic(ctx, lang)
 
-bot = commands.Bot(
-    command_prefix=COMMAND_CHARACTER, 
-    case_insensitive=True, 
-    intents=discord.Intents.all(),
-)
+@BOT.command(brief="Simple questions for new learners to start writing or talking (A1-A2)")
+async def q(ctx, lang=None): await query_commands.q(ctx, lang)
 
-@bot.command(brief="[Admin] Default language for the server to fall back to")
-async def deflang(ctx, lang = None):
-    server_id = ctx.guild.id
-    default_language: str | None
+@BOT.command(brief="Test quiz.")
+async def quiz(ctx: commands.Context):
+    "THIS IS A TEST COMMAND"
+    user: discord.Member | discord.User = ctx.author
 
-    if not lang: 
-        default_language = getDefaultLanguage(DEFAULT_LANGUAGE_ENTRIES, server_id)
-        if not default_language: 
-            return await ctx.send(Q_NO_DEFAULT_LANGUAGE())
-        else: 
-            return await ctx.send(Q_DEFAULT_LANGUAGE_IS(default_language))
+    await ctx.send("Say yes.")
 
-    if not ctx.message.author.guild_permissions.administrator:
-        return await ctx.send(Q_NO_PERMS_LANG())
-    addEntry(DEFAULT_LANGUAGE_ENTRIES, server_id, lang)  
-    return await ctx.send(Q_DEFAULT_LANG_SET(lang))
+    def check(m): return ctx.author == m.author
+    try: 
+        response: discord.Message = await BOT.wait_for('message', timeout=60, check=check)
+    except TimeoutError: 
+        return await ctx.send("You took too long to answer :(")
+    except Exception as e: 
+        return print(e)
 
-@bot.command(brief="Conversation topics for open discussions (B1 and up)")
-async def topic(ctx, lang=None):																		
-    lang = lang \
-        or getDefaultLanguage(DEFAULT_LANGUAGE_ENTRIES, ctx.guild.id) \
-        or GLOBAL_DEFAULT_LANGUAGE
+    if response.content.lower() == "yes":
+        await ctx.send("Hooray!")
+    else:
+        await ctx.send("Aww :(")
 
-    try:
-        items, names = getSheetInfo(lang, TOPIC_SHEET, ["C", "D"])						
-        await ctx.send(embed=formatInEmbed(
-            items[0], 
-            None,
-            f"{names[1]}: {items[1]}")
-        )
-
-    except Exception as e:
-        await ctx.send(embed=formatInEmbed(
-            Q_TOO_LITTLE_ENTRIES(),
-            None,
-            f"Currently: {e.args[0]}")
-        )
-
-@bot.command(brief="Simple questions for new learners to start writing or talking (A1-A2)")
-async def q(ctx, lang=None):																		
-    lang = lang \
-        or getDefaultLanguage(DEFAULT_LANGUAGE_ENTRIES, ctx.guild.id) \
-        or GLOBAL_DEFAULT_LANGUAGE
-
-    try:
-        items, names = getSheetInfo(lang, Q_SHEET, ["C", "E", "D"])						
-        await ctx.send(embed=formatInEmbed(
-            items[0], 
-            names[2]+":\n ||"+items[2]+"||",
-            f"{names[1]}: {items[1]}")
-        )
-
-    except Exception as e:
-        await ctx.send(embed=formatInEmbed(
-            Q_TOO_LITTLE_ENTRIES(),
-            None,
-            f"Currently: {e.args[0]}")
-        )
-
-bot.run(TOKEN)
+BOT.run(TOKEN)
