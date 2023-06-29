@@ -17,11 +17,12 @@ async def quiz(ctx: commands.Context, *args):
     lang = None
     times = 5
 
-    assert isinstance(args[0], str)
-    if not args[0].isnumeric(): lang = args[0]
-    else: 
-        times = int(args[0])
-        if len(args) > 1: lang = args[1]
+    if len(args) > 1:
+        assert isinstance(args[0], str)
+        if not args[0].isnumeric(): lang = args[0]
+        else: 
+            times = int(args[0])
+            if len(args) > 1: lang = args[1]
 
     await query_commands.command_quiz(ctx, times, lang)
 
