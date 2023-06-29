@@ -3,7 +3,7 @@ from config_logic import getDefaultLanguage, addEntry
 from discord.ext import commands
 from response_strings import *
 
-async def deflang(ctx: commands.Context, lang = None):
+async def command_deflang(ctx: commands.Context, lang = None):
     assert ctx.guild, "Count not retreive guild"
     assert isinstance(ctx.message.author, discord.Member), "Count not retreive member information"
     server_id = str(ctx.guild.id)

@@ -15,8 +15,8 @@ def Q_NO_PERMS_LANG():
 def Q_DEFAULT_LANG_SET(default_language: str):
     return f"The default language has been set to `{default_language}`"
 
-def formatInEmbed(title: str, desc: str|None, text: str) -> discord.Embed:
+def formatInEmbed(title: str, desc: str|None, footer: str) -> discord.Embed:
     return discord.Embed(
         title=title,
         description=desc,
-    ).set_footer(text=text)
+    ).set_footer(text=footer)
